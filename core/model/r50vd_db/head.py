@@ -4,7 +4,6 @@ from keras import layers, models
 class DBHead(object):
     def __init__(self, params):
         self.__name__ = 'DBHead'
-        self.mode = params['mode']
         self.k = params['det']['k']
 
     def binarize(self, fuse):
@@ -58,9 +57,6 @@ class DBHead(object):
 
         # probability map
         p = self.binarize(fuse)
-        if self.mode != "train":
-            return p, None, None
-
         # threshold map
         t = self.thresh(fuse)
         # approximate binary map

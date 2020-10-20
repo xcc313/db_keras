@@ -16,7 +16,7 @@ class DetModel(object):
         self.head = DBHead(params)
         self.loss = DBLoss(params)
 
-    def __call__(self, mode):
+    def __call__(self):
 
         image_input = layers.Input(shape=(self.input_size, self.input_size, 3))
         gt_input = layers.Input(shape=(self.input_size, self.input_size))
@@ -26,14 +26,12 @@ class DetModel(object):
 
         conv_feas = self.backbone(image_input)
         shrink_maps, threshold_maps, binary_maps = self.head(conv_feas)
+        losses = layers.Lambda(self.loss, name='loss_all')(
+            [shrink_maps, threshold_maps, binary_maps, gt_input, mask_input, thresh_input, thresh_mask_input])
 
-        if mode == "train":
-            losses = layers.Lambda(self.loss, name='loss_all')([shrink_maps, threshold_maps, binary_maps, gt_input, mask_input, thresh_input, thresh_mask_input])
+        training_model = models.Model(inputs=[image_input, gt_input, mask_input, thresh_input, thresh_mask_input],
+                                      outputs=losses)
+        prediction_model = models.Model(inputs=image_input, outputs=shrink_maps)
 
-            training_model = models.Model(inputs=[image_input, gt_input, mask_input, thresh_input, thresh_mask_input],
-                                          outputs=losses)
-            return training_model
-        else:
-            prediction_model = models.Model(inputs=image_input, outputs=shrink_maps)
-            return prediction_model
+        return training_model, prediction_model
 

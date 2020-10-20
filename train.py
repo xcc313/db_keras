@@ -1,13 +1,14 @@
 from absl import app, flags
 import os.path as osp
 import os
-# os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 import datetime
 from core.tools import build_cfg, generate
 from core.model.r50vd_db import DetModel
 from keras import callbacks
 from keras import optimizers
+from core.callbacks.bestkeepcallback import BestKeepCheckpoint
 
 
 flags.DEFINE_string('config', './configs/det_r50_vd_db_colab.yml', 'path to config file')
@@ -26,7 +27,7 @@ def main(_argv):
 
     model_algorithm = cfg['det']['algorithm']
     if model_algorithm == 'DB':
-        model = DetModel(cfg)(cfg['mode'])
+        model, inference_model = DetModel(cfg)()
         model.summary()
     else:
         raise NotImplementedError('%s not support yet !' % model_algorithm)
@@ -41,7 +42,7 @@ def main(_argv):
             print('Restoring weights from: %s ...' % init_weight)
             model.load_weights(init_weight, by_name=True, skip_mismatch=True)
             # convert to inference model
-            # model.save("db_inference_model.h5")
+            # inference_model.save("db_inference_model.h5")
         else:
             print('%s does not exist !' % init_weight)
             print('Training from scratch')
@@ -55,6 +56,8 @@ def main(_argv):
             verbose=1,
         )
 
+        bk = BestKeepCheckpoint(save_path=os.path.join(checkpoints_dir, "db_{epoch:02d}.h5"),
+                                        eval_model=inference_model)
         tb = callbacks.TensorBoard(
             log_dir="logs",
         )
