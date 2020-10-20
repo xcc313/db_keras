@@ -69,7 +69,7 @@ def main(_argv):
             initial_epoch=0,
             epochs=10,
             verbose=1,
-            callbacks=[tb, checkpoint],
+            callbacks=[tb, bk, checkpoint],
             validation_data=val_generator,
             validation_steps=19
         )
