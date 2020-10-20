@@ -8,14 +8,14 @@ det:
   log_smooth_window: 20
 train:
   image_shape: [3, 640, 640]
-  img_dir: E:/dm/samples/icdar2015/
-  label_path:  E:/dm/samples/icdar2015/train_icdar2015_label.txt
+  img_dir: ./data/icdar2015/
+  label_path:  ./data/icdar2015/train_icdar2015_label.txt
   batch_size: 8
   init_weight_path:
   save_weight_path: ./ckpts
 test:
   image_shape: [3, 640, 640]
-  img_dir: E:/dm/samples/icdar2015/
-  label_path:  E:/dm/samples/icdar2015/test_icdar2015_label.txt
+  img_dir: ./data/icdar2015/
+  label_path:  ./data/icdar2015/test_icdar2015_label.txt
   batch_size: 2
   init_weight_path:
