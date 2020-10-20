@@ -6,7 +6,7 @@ import numpy as np
 import os.path as osp
 import pyclipper
 from shapely.geometry import Polygon
-from core.tools.db_process import DBProcessTrain
+from core.tools.db_process import DBProcessTrain, DBProcessTest
 
 
 def show_polys(image, anns, window_name):
@@ -77,26 +77,30 @@ def compute_distance(xs, ys, point_1, point_2):
     return result
 
 
-def generate(img_set_dir, label_file_path, batch_size=16, image_size=640):
+def generate(img_set_dir, label_file_path, batch_size=16, image_size=640, is_training=True):
 
-    process = DBProcessTrain({'img_set_dir': img_set_dir, 'image_shape': (3, image_size, image_size)})
+    if is_training:
+        process = DBProcessTrain({'img_set_dir': img_set_dir, 'image_shape': (3, image_size, image_size)})
+    else:
+        process = DBProcessTest({'img_set_dir': img_set_dir, 'image_shape': (3, 736, 1280)})
 
-    def sample_iter_reader():
-        with open(label_file_path, "rb") as fin:
-            label_infor_list = fin.readlines()
-        img_num = len(label_infor_list)
-        img_id_list = list(range(img_num))
-        random.shuffle(img_id_list)
-
-        for img_id in range(0, img_num, 1):
-            label_infor = label_infor_list[img_id_list[img_id]]
-            outs = process(label_infor)
-            if outs is None:
-                continue
-            yield outs
+    with open(label_file_path, "rb") as fin:
+        label_infor_list = fin.readlines()
+    img_num = len(label_infor_list)
+    img_id_list = list(range(img_num))
+    random.shuffle(img_id_list)
 
     b = 0
-    for outs in sample_iter_reader():
+    current_idx = 0
+
+    while True:
+        if current_idx >= img_num:
+            if is_training:
+                np.random.shuffle(img_id_list)
+            current_idx = 0
+
+        label_infor = label_infor_list[img_id_list[current_idx]]
+        outs = process(label_infor)
         image, gt, mask, thresh_map, thresh_mask = outs
         if b == 0:
             # Init batch arrays
@@ -113,6 +117,7 @@ def generate(img_set_dir, label_file_path, batch_size=16, image_size=640):
         batch_thresh_maps[b] = thresh_map
         batch_thresh_masks[b] = thresh_mask
         b += 1
+        current_idx += 1
         if b == batch_size:
             inputs = [batch_images, batch_gts, batch_masks, batch_thresh_maps, batch_thresh_masks]
             outputs = batch_loss
