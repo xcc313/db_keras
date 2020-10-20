@@ -1,7 +1,7 @@
 from absl import app, flags
 import os.path as osp
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+# os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 import datetime
 from core.tools import build_cfg, generate
