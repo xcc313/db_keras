@@ -1,0 +1,21 @@
+det:
+  algorithm: DB
+  main_loss_type: DiceLoss
+  alpha: 5
+  beta: 10
+  k: 50
+  epoch: 1200
+  log_smooth_window: 20
+train:
+  image_shape: [3, 640, 640]
+  img_dir: E:/dm/samples/icdar2015/
+  label_path:  E:/dm/samples/icdar2015/train_icdar2015_label.txt
+  batch_size: 4
+  init_weight_path:
+  save_weight_path: ./ckpts
+test:
+  image_shape: [3, 640, 640]
+  img_dir: E:/dm/samples/icdar2015/
+  label_path:  E:/dm/samples/icdar2015/test_icdar2015_label.txt
+  batch_size: 2
+  init_weight_path:

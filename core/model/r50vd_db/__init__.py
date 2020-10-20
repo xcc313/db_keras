@@ -1,0 +1,1 @@
+from core.model.r50vd_db.model import DetModel
