@@ -8,7 +8,7 @@ dic = json.loads(data)  # json.loads(str) ; json.load(file)
 
 for key in dic:
     values = dic[key]
-    label = "icdar_c4_train_imgs/" + key + ".jpg"+ "\t" + str(values).replace("'", '"') + "\n"
+    label = "icdar_c4_train_imgs/" + key + ".jpg"+ "\t" + str(values).replace("'", '"').replace("False", 'false').replace("True", 'true') + "\n"
     txt_file.write(str(label))
 
 json_file.close()
