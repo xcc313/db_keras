@@ -8,8 +8,12 @@ dic = json.loads(data)  # json.loads(str) ; json.load(file)
 
 for key in dic:
     values = dic[key]
-    label = "icdar_c4_train_imgs/" + key + ".jpg"+ "\t" + str(values).replace("'", '"').replace("False", 'false').replace("True", 'true') + "\n"
-    txt_file.write(str(label))
+    try:
+        obj = json.loads(str(values).replace("'", '"').replace(": False", ': false').replace(": True", ': true'))
+        label = "icdar_c4_train_imgs/" + key + ".jpg" + "\t" + str(values).replace("'", '"').replace(": False", ": false").replace(": True", ": true") + "\n"
+        txt_file.write(str(label))
+    except Exception as e:
+        print('skip one')
 
 json_file.close()
 txt_file.close()
