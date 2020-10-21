@@ -9,7 +9,7 @@ det:
 train:
   image_shape: [3, 640, 640]
   img_dir: ./data/icdar2015/
-  label_path:  ./data/icdar2015/icdar2015/train_icdar2015_label.txt
+  label_path:  ./data/icdar2015/train_icdar2015_label.txt
   batch_size: 8
   init_weight_path: ./checkpoints/2020-10-21/db_10_2.5826_5.2344.h5
   save_weight_path: ./ckpts
