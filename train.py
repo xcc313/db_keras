@@ -67,7 +67,7 @@ def main(_argv):
             generator=train_generator,
             steps_per_epoch=125*3,
             initial_epoch=0,
-            epochs=5,
+            epochs=2,
             verbose=1,
             callbacks=[tb, bk, checkpoint],
             validation_data=val_generator,
