@@ -21,7 +21,7 @@ class ResNet(object):
         for block in range(len(depth)):
             for i in range(depth[block]):
                 conv_name = "res" + str(block + 2) + chr(97 + i)
-                conv = self.bottleneck_block(
+                conv = self.basic_block(
                     input=conv,
                     num_filters=num_filters[block],
                     strides=(2, 2) if i == 0 and block != 0 else (1, 1),

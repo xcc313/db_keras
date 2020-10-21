@@ -311,8 +311,6 @@ class DBProcessTest(object):
         im[:, :, 0] /= img_std[0]
         im[:, :, 1] /= img_std[1]
         im[:, :, 2] /= img_std[2]
-        channel_swap = (2, 0, 1)
-        im = im.transpose(channel_swap)
         return im
 
     def __call__(self, im):

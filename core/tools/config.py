@@ -11,7 +11,7 @@ def build_cfg(path):
 
     with open(path, 'r') as f:
         cfg = yaml.safe_load(f.read())
-
+        cfg.update(cfg['global'])
         pprint.pprint(cfg)
 
     return cfg

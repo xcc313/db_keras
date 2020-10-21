@@ -1,3 +1,8 @@
+global:
+  thresh: 0.1
+  box_thresh: 0.7
+  max_candidates: 1000
+  unclip_ratio: 1.5
 det:
   algorithm: DB
   main_loss_type: DiceLoss
