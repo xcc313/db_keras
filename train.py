@@ -65,9 +65,9 @@ def main(_argv):
         model.compile(optimizer=optimizers.Adam(lr=1e-3), loss={'loss_all': lambda y_true, y_pred: y_pred})
         model.fit_generator(
             generator=train_generator,
-            steps_per_epoch=125,
+            steps_per_epoch=125*3,
             initial_epoch=0,
-            epochs=10,
+            epochs=5,
             verbose=1,
             callbacks=[tb, bk, checkpoint],
             validation_data=val_generator,

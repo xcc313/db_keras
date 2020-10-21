@@ -1,9 +1,11 @@
+from keras import layers
 
 class EncoderWithReshape(object):
     def __init__(self):
         super(EncoderWithReshape, self).__init__()
+
     def __call__(self, inputs):
-        None
+
 
 class EncoderWithRNN(object):
     def __init__(self):
