@@ -1,10 +1,11 @@
-det:
+rec:
   algorithm: CRNN
-  main_loss_type: DiceLoss
-  alpha: 5
-  beta: 10
-  k: 50
+  main_loss_type: CTC
+  use_space_char: false
   epoch: 1200
+  max_text_length: 25
+  character_type: ch
+  character_dict_path: ./ppocr/utils/ppocr_keys_v1.txt
   log_smooth_window: 20
 train:
   image_shape: [3, 640, 640]

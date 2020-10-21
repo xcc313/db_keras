@@ -1,0 +1,1 @@
+from core.model.r34vd_crnn.model import RecModel

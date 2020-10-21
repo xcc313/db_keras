@@ -11,7 +11,7 @@ from keras import optimizers
 from core.callbacks.bestkeepcallback import BestKeepCheckpoint
 
 
-flags.DEFINE_string('config', './configs/det_r50_vd_db_colab.yml', 'path to config file')
+flags.DEFINE_string('config', './configs/rec_r34_vd_ctc.yml', 'path to config file')
 FLAGS = flags.FLAGS
 
 
@@ -26,7 +26,7 @@ def main(_argv):
         os.makedirs(checkpoints_dir)
 
     model_algorithm = cfg['det']['algorithm']
-    if model_algorithm == 'DB':
+    if model_algorithm == 'CRNN':
         model, inference_model = DetModel(cfg)()
         model.summary()
     else:
@@ -65,7 +65,7 @@ def main(_argv):
         model.compile(optimizer=optimizers.Adam(lr=1e-3), loss={'loss_all': lambda y_true, y_pred: y_pred})
         model.fit_generator(
             generator=train_generator,
-            steps_per_epoch=125,
+            steps_per_epoch=125*3,
             initial_epoch=0,
             epochs=10,
             verbose=1,

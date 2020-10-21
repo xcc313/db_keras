@@ -1,6 +1,5 @@
 import tensorflow as tf
-
-#34Layer
+#50Layer
 class ResNet(object):
     def __init__(self, params):
         None
@@ -22,7 +21,7 @@ class ResNet(object):
         for block in range(len(depth)):
             for i in range(depth[block]):
                 conv_name = "res" + str(block + 2) + chr(97 + i)
-                conv = self.basic_block(
+                conv = self.bottleneck_block(
                     input=conv,
                     num_filters=num_filters[block],
                     strides=(2, 2) if i == 0 and block != 0 else (1, 1),
