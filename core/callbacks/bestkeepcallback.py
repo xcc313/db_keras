@@ -19,4 +19,4 @@ class BestKeepCheckpoint(tf.keras.callbacks.Callback):
             save_path = self.save_path.format(epoch=epoch)
             print("save model " + save_path)
             self.eval_model.save(save_path)
-            shutil.copy(save_path, "/content/drive/My\ Drive/ICDAR_2019_LSVT/")
+            shutil.copy(save_path, "/content/drive/My Drive/ICDAR_2019_LSVT/")
