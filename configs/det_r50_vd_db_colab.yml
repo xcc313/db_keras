@@ -16,7 +16,7 @@ train:
   img_dir: ./data/icdar2019/
   label_path:  ./data/icdar2019/icdar2019_label.txt
   batch_size: 8
-  init_weight_path: ./checkpoints/2020-10-22/db_02.h5
+  init_weight_path:
   save_weight_path: ./ckpts
 test:
   image_shape: [3, 736, 1280]
