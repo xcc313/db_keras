@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import tensorflow as tf
-
+import shutil
 
 
 class BestKeepCheckpoint(tf.keras.callbacks.Callback):
@@ -15,10 +15,8 @@ class BestKeepCheckpoint(tf.keras.callbacks.Callback):
         self.only_save_weight = only_save_weight
 
     def on_epoch_end(self, epoch, logs=None):
-        if epoch // 10 == 0:
+        if (epoch+1) % 3 == 0:
             save_path = self.save_path.format(epoch=epoch)
             print("save model " + save_path)
-            if self.only_save_weight:
-                self.eval_model.save_weights(save_path)
-            else:
-                self.eval_model.save(save_path)
+            self.eval_model.save(save_path)
+            shutil.copy(save_path, "/content/drive/My\ Drive/ICDAR_2019_LSVT/")
