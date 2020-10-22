@@ -2,7 +2,7 @@ from absl import app, flags
 import os.path as osp
 import os
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
-
+import shutil
 import datetime
 from core.tools import build_cfg, generate
 from core.model.r50vd_db import DetModel
@@ -73,6 +73,7 @@ def main(_argv):
             validation_data=val_generator,
             validation_steps=19
         )
+        inference_model.save("/content/drive/My Drive/ICDAR_2019_LSVT/db_inference_model.h5")
     except Exception as e:
         print(e)
 
