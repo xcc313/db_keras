@@ -131,8 +131,9 @@ class DBPostProcess(object):
         return cv2.mean(bitmap[ymin:ymax + 1, xmin:xmax + 1], mask)[0]
 
     def __call__(self, pred, ratio_list):
+        channel_swap = (2, 0, 1)
+        pred = pred.transpose(channel_swap)
 
-        pred = pred[:, :, 0]
         segmentation = pred > self.thresh
 
         boxes_batch = []

@@ -6,6 +6,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import glob
 import numpy as np
 import datetime
+import pickle
 from core.tools import build_cfg, generate
 from core.tools.db_process import DBProcessTest
 from core.tools.db_postprocess import DBPostProcess
@@ -23,7 +24,7 @@ def main(_argv):
     model_algorithm = cfg['det']['algorithm']
     if model_algorithm == 'DB':
         _, inference_model = DetModel(cfg)()
-        inference_model.load_weights(r"C:\Users\DL\Downloads\db_05_2.4870_4.3123.h5", by_name=True, skip_mismatch=True)
+        inference_model.load_weights(r"E:\dm\model_weights\db_inference_model.h5", by_name=True, skip_mismatch=True)
         inference_model.summary()
     else:
         raise NotImplementedError('%s not support yet !' % model_algorithm)
@@ -37,10 +38,13 @@ def main(_argv):
             src_image = im.copy()
             im, ratio_list = process(im)
             p = inference_model.predict(im)[0]
-            boxes = postprocess(p, ratio_list)
+
+            boxes = postprocess(p, [ratio_list])[0]
 
             for box in boxes:
-                cv2.drawContours(src_image, [np.array(box)], -1, (0, 255, 0), 2)
+                box = np.array(box).astype(np.int32).reshape(-1, 2)
+                cv2.polylines(src_image, [box], True, color=(255, 255, 0), thickness=2)
+
             cv2.namedWindow('image', cv2.WINDOW_NORMAL)
             cv2.imshow('image', src_image)
             cv2.waitKey(0)
