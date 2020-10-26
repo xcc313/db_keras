@@ -33,7 +33,8 @@ def main(_argv):
 
         process = DBProcessTest(cfg)
         postprocess = DBPostProcess(cfg)
-        for image_path in glob.glob(osp.join(r'E:\dm\tmp\DB_predict', '*.jpg')):
+        for image_path in glob.glob(osp.join(r'E:\dm\repo\CHINESE-OCR\ctpn\data\demo', '*.jpg')):
+            print(image_path)
             im = cv2.imread(image_path)
             src_image = im.copy()
             im, ratio_list = process(im)

@@ -1,5 +1,5 @@
 from  .backbone import ResNet
-from .head import DBHead
+from .head import CTCHead
 from .loss import DBLoss
 
 from keras import layers, models
@@ -13,7 +13,7 @@ class RecModel(object):
         """
         self.input_size = params['train']['image_shape'][1]
         self.backbone = ResNet(params)
-        self.head = DBHead(params)
+        self.head = CTCHead(params)
         self.loss = DBLoss(params)
 
     def __call__(self):

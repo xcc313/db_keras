@@ -5,7 +5,7 @@ import os
 
 import datetime
 from core.tools import build_cfg, generate
-from core.model.r50vd_db import DetModel
+from core.model.r34vd_crnn import RecModel
 from keras import callbacks
 from keras import optimizers
 from core.callbacks.bestkeepcallback import BestKeepCheckpoint
