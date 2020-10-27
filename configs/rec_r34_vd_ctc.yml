@@ -1,16 +1,12 @@
-rec:
-  algorithm: CRNN
-  main_loss_type: CTC
-  use_space_char: false
-  epoch: 1200
-  max_text_length: 25
-  character_type: ch
-  character_dict_path: ./ppocr/utils/ppocr_keys_v1.txt
-  log_smooth_window: 20
 train:
   image_shape: [3, 32, 100]
   max_text_length: 25
   character_type: en
+  use_space_char: True
+  epoch: 1200
+  character_dict_path: ./data/ic15_data/ic15_dict.txt
+  loss_type: ctc
+  distort: True,
   greedy: True,
   beam_width: 100,
   top_paths: 1,
@@ -20,7 +16,14 @@ train:
   init_weight_path:
   save_weight_path: ./ckpts
 test:
-  image_shape: [3, 640, 640]
+  image_shape: [ 3, 32, 100 ]
+  max_text_length: 25
+  character_type: en
+  use_space_char: True
+  epoch: 1200
+  character_dict_path: ./data/ic15_data/ic15_dict.txt
+  loss_type: ctc
+  distort: False,
   img_dir: E:/dm/samples/ic15_data/
   label_path:  E:/dm/samples/ic15_data/rec_gt_test.txt
   batch_size: 2

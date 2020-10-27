@@ -4,7 +4,7 @@ import os
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 import datetime
-from core.tools import build_cfg, generate
+from core.tools import build_cfg, generate_rec
 from core.model.r34vd_crnn import RecModel
 from keras import callbacks
 from keras import optimizers
@@ -30,8 +30,8 @@ def main(_argv):
 
     init_weight = cfg['train']['init_weight_path']
 
-    train_generator = generate(cfg['train']['img_dir'], cfg['train']['label_path'], batch_size=batch_size)
-    val_generator = generate(cfg['test']['img_dir'], cfg['test']['label_path'], batch_size=batch_size)
+    train_generator = generate_rec(cfg['train'], batch_size=batch_size)
+    val_generator = generate_rec(cfg['test'], batch_size=batch_size)
 
     try:
         if init_weight:
