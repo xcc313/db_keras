@@ -1,29 +1,21 @@
 from keras import layers
 
-class EncoderWithRNN(object):
-    def __init__(self, params):
-        super(EncoderWithRNN, self).__init__()
-        self.rnn_hidden_size = params['hidden_size']
-    def __call__(self, inputs):
-        lstm_list = []
-        name_prefix = "lstm"
-        rnn_hidden_size = self.rnn_hidden_size
-        for no in range(1, 3):
-            if no == 1:
-                is_reverse = False
-            else:
-                is_reverse = True
-            name = "%s_st1_fc%d" % (name_prefix, no)
-            fc = layers.Dense(rnn_hidden_size * 4)(inputs)
-            name = "%s_st1_out%d" % (name_prefix, no)
-
-
 
 class SequenceEncoder(object):
     def __init__(self, params):
         super(SequenceEncoder, self).__init__()
-        self.encoder = EncoderWithRNN(params)
+        self.char_num = params['char_num']
+        self.rnn_hidden_size = params['hidden_size']
     def __call__(self, inputs):
-        encoder_features = layers.Flatten()(inputs)
-        encoder_features = self.encoder(inputs)
-        return encoder_features
+        encoder_features = layers.TimeDistributed(layers.Flatten())(inputs)
+
+        x = layers.Bidirectional(layers.LSTM(self.rnn_hidden_size, return_sequences=True, use_bias=True,
+                                             recurrent_activation='sigmoid'))(encoder_features)
+        x = layers.TimeDistributed(layers.Dense(self.rnn_hidden_size))(x)
+        x = layers.Bidirectional(layers.LSTM(self.rnn_hidden_size, return_sequences=True, use_bias=True,
+                                             recurrent_activation='sigmoid'))(x)
+        x = layers.TimeDistributed(layers.Dense(self.char_num + 1), name="DenseSoftmax")(x)
+
+        y_pred = layers.Activation('softmax', name='Softmax')(x)
+
+        return y_pred

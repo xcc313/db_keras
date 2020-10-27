@@ -9,6 +9,9 @@ rec:
   log_smooth_window: 20
 train:
   image_shape: [3, 640, 640]
+  greedy: True,
+  beam_width: 100,
+  top_paths: 1,
   img_dir: E:/dm/samples/icdar2015/
   label_path:  E:/dm/samples/icdar2015/train_icdar2015_label.txt
   batch_size: 4

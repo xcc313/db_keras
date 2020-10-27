@@ -25,12 +25,8 @@ def main(_argv):
     if not osp.exists(checkpoints_dir):
         os.makedirs(checkpoints_dir)
 
-    model_algorithm = cfg['det']['algorithm']
-    if model_algorithm == 'CRNN':
-        model, inference_model = DetModel(cfg)()
-        model.summary()
-    else:
-        raise NotImplementedError('%s not support yet !' % model_algorithm)
+    model, inference_model = RecModel(cfg)()
+    model.summary()
 
     init_weight = cfg['train']['init_weight_path']
 
@@ -62,7 +58,7 @@ def main(_argv):
             log_dir="logs",
         )
 
-        model.compile(optimizer=optimizers.Adam(lr=1e-3), loss={'loss_all': lambda y_true, y_pred: y_pred})
+        model.compile(optimizer=optimizers.Adam(lr=1e-3), loss={'CTCloss': lambda y_true, y_pred: y_pred})
         model.fit_generator(
             generator=train_generator,
             steps_per_epoch=125*3,
