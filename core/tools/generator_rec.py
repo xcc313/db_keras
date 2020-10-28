@@ -47,7 +47,7 @@ def generate_rec(params, globals , is_training=True):
             char_ops=globals.char_ops,
             loss_type=globals.loss_type,
             max_text_length=globals.max_text_length,
-            distort=params.use_distort)
+            distort=params.distort)
 
         image, gt = outs
         if b == 0:
