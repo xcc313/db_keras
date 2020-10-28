@@ -1,37 +1,35 @@
 from absl import app, flags
 import os.path as osp
 import os
-# os.environ['CUDA_VISIBLE_DEVICES'] = '1'
-
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import datetime
-from core.tools import build_cfg, generate_rec
+from core.tools import build_cfg, generate_rec, DotDict
 from core.model.r34vd_crnn import RecModel
 from keras import callbacks
 from keras import optimizers
 from core.callbacks.bestkeepcallback import BestKeepCheckpoint
 
-
 flags.DEFINE_string('config', './configs/rec_r34_vd_ctc.yml', 'path to config file')
 FLAGS = flags.FLAGS
-
 
 def main(_argv):
     print(FLAGS.config)
     cfg = build_cfg(FLAGS.config)
     cfg.update({'mode': 'train'})
-    batch_size = cfg['train']['batch_size']
+    cfg = DotDict.to_dot_dict(cfg)
 
     checkpoints_dir = f'checkpoints/{datetime.date.today()}'
     if not osp.exists(checkpoints_dir):
         os.makedirs(checkpoints_dir)
 
-    model, inference_model = RecModel(cfg)()
+    model, inference_model, decode_model = RecModel(cfg)()
     model.summary()
+    # model.save("./rec_model.h5")
 
     init_weight = cfg['train']['init_weight_path']
 
-    train_generator = generate_rec(cfg['train'], batch_size=batch_size)
-    val_generator = generate_rec(cfg['test'], batch_size=batch_size)
+    train_generator = generate_rec(cfg['train'], cfg, is_training=True)
+    val_generator = generate_rec(cfg['test'], cfg, is_training=False)
 
     try:
         if init_weight:

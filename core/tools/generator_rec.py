@@ -1,20 +1,15 @@
 import cv2
 import random
 import numpy as np
+from copy import deepcopy
 from .img_tools import process_image
-from core.tools.character import CharacterOps
 
-def generate_rec(params, is_training=True):
+def generate_rec(params, globals , is_training=True):
+    batch_size = params.batch_size
+    image_shape = deepcopy(params.image_shape)
+    image_shape.insert(0, -1)
 
-    char_ops_params = {
-        "character_type": params.character_type,
-        "character_dict_path": params.rec_char_dict_path,
-        "use_space_char": params.use_space_char,
-        "max_text_length": params.max_text_length,
-        "loss_type":'ctc'
-    }
-
-    with open(params.label_file_path, "rb") as fin:
+    with open(params.label_path, "rb") as fin:
         label_infor_list = fin.readlines()
     img_num = len(label_infor_list)
     img_id_list = list(range(img_num))
@@ -30,7 +25,7 @@ def generate_rec(params, is_training=True):
             current_idx = 0
         label_infor = label_infor_list[img_id_list[current_idx]]
         substr = label_infor.decode('utf-8').strip("\n").split("\t")
-        img_path = params.img_set_dir + "/" + substr[0]
+        img_path = params.img_dir + "/" + substr[0]
         img = cv2.imread(img_path)
         if img is None:
             print("{} does not exist!".format(img_path))
@@ -40,30 +35,38 @@ def generate_rec(params, is_training=True):
 
         label = substr[1]
 
+        # the number of time distributed values, or another words the length of the time axis in the output,
+        # or equivalently the width of the image after convolutions. Needed to input in the CTC loss
+        # each maxpooling halves the width dimension so in our model scaling is 1/4 with 2 maxpoolings
+        t_dist_dim = int(params.image_shape[1] / 4)
+
         outs = process_image(
             img=img,
             image_shape=params.image_shape,
             label=label,
-            char_ops=CharacterOps(char_ops_params),
-            loss_type=params.loss_type,
-            max_text_length=params.max_text_length,
+            char_ops=globals.char_ops,
+            loss_type=globals.loss_type,
+            max_text_length=globals.max_text_length,
             distort=params.use_distort)
 
-        image, gt, mask, thresh_map, thresh_mask = outs
+        image, gt = outs
         if b == 0:
             # Init batch arrays
-            batch_images = np.zeros([batch_size, image_size, image_size, 3], dtype=np.float32)
-            batch_gts = np.zeros([batch_size, image_size, image_size], dtype=np.float32)
+            batch_images = np.zeros(batch_size, dtype=np.float32)
+            batch_gts = np.zeros(batch_size, dtype=np.float32)
+            batch_label_length = np.zeros(batch_size, dtype=np.float32)
+            batch_input_length = np.zeros(batch_size, dtype=np.float32)
             batch_loss = np.zeros([batch_size, ], dtype=np.float32)
 
         batch_images[b] = image
         batch_gts[b] = gt
-        batch_masks[b] = mask
+        batch_label_length[b] = len(gt)
+        batch_input_length[b] = t_dist_dim
 
         b += 1
         current_idx += 1
         if b == batch_size:
-            inputs = [batch_images, batch_gts, batch_masks, batch_thresh_maps, batch_thresh_masks]
+            inputs = [batch_images, batch_gts]
             outputs = batch_loss
-            yield inputs, outputs
+            yield [inputs, label, ], outputs
             b = 0

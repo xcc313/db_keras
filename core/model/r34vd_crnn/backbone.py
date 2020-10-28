@@ -1,12 +1,12 @@
 import tensorflow as tf
-#50Layer
+
 class ResNet(object):
     def __init__(self, params):
         None
 
     def __call__(self, input):
         #VC  3 (3,3) replace (7,7)
-        x = self.conv_bn_layer(input= input, num_filters=32, kernel_size=(3, 3), strides=(2, 2), act="relu",
+        x = self.conv_bn_layer(input= input, num_filters=32, kernel_size=(3, 3), strides=(1, 1), act="relu",
                                name="conv1_1")
         x = self.conv_bn_layer(input=x, num_filters=32, kernel_size=(3, 3), strides=(1, 1), act="relu",
                                name="conv1_2")
@@ -16,30 +16,33 @@ class ResNet(object):
 
         depth = [3, 4, 6, 3]
         num_filters = [64, 128, 256, 512]
-        outs = []
 
         for block in range(len(depth)):
             for i in range(depth[block]):
                 conv_name = "res" + str(block + 2) + chr(97 + i)
+                if i == 0 and block != 0:
+                    stride = (2, 1)
+                else:
+                    stride = (1, 1)
                 conv = self.basic_block(
                     input=conv,
                     num_filters=num_filters[block],
-                    strides=(2, 2) if i == 0 and block != 0 else (1, 1),
+                    strides=stride,
                     name=conv_name,
                     if_first=block == i == 0
                     )
-            outs.append(conv)
 
-        return outs
+        out = tf.keras.layers.MaxPool2D(strides=(2, 2), padding='same')(conv)
+        return out
 
 
     def shortcut(self, input, ch_out, strides, name, if_first=False):
         ch_in = input.shape[3]
-        if ch_in != ch_out or strides != (1, 1):
+        if ch_in != ch_out or strides[0] != 1:
             if if_first:
                 return self.conv_bn_layer(input, ch_out, (1, 1), strides, name=name)
             else:
-                return self.conv_bn_layer_vd(input, ch_out, (1, 1), name=name)
+                return self.conv_bn_layer_vd(input, ch_out, (1, 1), strides, name=name)
         elif if_first:
             return self.conv_bn_layer(input, ch_out, (1, 1), strides, name=name)
         else:
@@ -83,10 +86,10 @@ class ResNet(object):
         return x
 
 
-    def conv_bn_layer_vd(self, input, num_filters, kernel_size, act=None, name=None):
-        pool = tf.keras.layers.AvgPool2D(strides=(2, 2))(input)
-        padding = "valid" #if (num_filters - 1) // 2 == 0 else (1, 1)
-        conv = tf.keras.layers.Conv2D(num_filters, kernel_size, strides=(1, 1), name=name, padding=padding)(pool)
+    def conv_bn_layer_vd(self, input, num_filters,kernel_size, strides, act=None, name=None):
+        pool = tf.keras.layers.AvgPool2D(pool_size=strides,strides=strides)(input)
+        padding = "same" #if (num_filters - 1) // 2 == 0 else (1, 1)
+        conv = tf.keras.layers.Conv2D(num_filters, kernel_size , strides=(1, 1), name=name, padding=padding)(pool)
         x = tf.keras.layers.BatchNormalization(epsilon=1e-5, name=name + "_bn")(conv)
         if act:
             x = tf.keras.layers.Activation(act, name=name + "_act")(x)

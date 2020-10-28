@@ -1,6 +1,7 @@
 from .backbone import ResNet
 from .seq_encoder import SequenceEncoder
-
+from core.tools.character import CharacterOps
+from copy import deepcopy
 from keras import layers, models
 import keras.backend as K
 import tensorflow as tf
@@ -38,8 +39,6 @@ def ctc_complete_decoding_lambda_func(args, **arguments):
         K.ctc_decode with dtype='float32'
     """
 
-    # import tensorflow as tf # Require for loading a model saved
-
     y_pred, input_length = args
     my_params = arguments
 
@@ -52,23 +51,36 @@ def ctc_complete_decoding_lambda_func(args, **arguments):
 class RecModel(object):
     def __init__(self, params):
         """
-        Detection model for OCR text detection.
+        Detection model for OCR text rec.
         :param params:
         """
-        self.input_size = params['train']['image_shape'][1]
+
+        self.image_shape = deepcopy(params['train']['image_shape'])
         self.greedy = params['train']['greedy']
         self.beam_width = params['train']['beam_width']
         self.top_paths = params['train']['top_paths']
+
+        char_ops_params = {
+            "character_type": params.character_type,
+            "character_dict_path": params.character_dict_path,
+            "use_space_char": params.use_space_char,
+            "max_text_length": params.max_text_length,
+            "loss_type": params.loss_type
+        }
+
+        params.update({'char_ops': CharacterOps(char_ops_params)})
 
         self.backbone = ResNet(params)
         self.head = SequenceEncoder(params)
 
     def __call__(self):
 
-        image_input = layers.Input(shape=(self.input_size, self.input_size, 3))
+        image_input = layers.Input(shape=self.image_shape)
 
         conv_feas = self.backbone(image_input)
-        y_pred = self.head(conv_feas)
+        fc = self.head(conv_feas)
+
+        y_pred = layers.Activation('softmax', name='Softmax')(fc)
 
         """
         Transcription  就是把每个width 的预测 （per-frame prediction） 变成标记序列。
@@ -89,7 +101,7 @@ class RecModel(object):
 
         # Keras doesn't currently support loss funcs with extra parameters
         # so CTC loss is implemented in a lambda layer
-        loss_out = layers.Lambda(ctc_lambda_func, output_shape=(1,), name='CTCloss')([y_pred,
+        loss_out = layers.Lambda(ctc_lambda_func, output_shape=(1,), name='CTCloss')([fc,
                                                                            labels,
                                                                            input_length,
                                                                            label_length])
@@ -98,15 +110,14 @@ class RecModel(object):
         out_decoded_dense = layers.Lambda(ctc_complete_decoding_lambda_func, output_shape=(None, None),
                                    name='CTCdecode', arguments={'greedy': self.greedy,
                                                                 'beam_width': self.beam_width,
-                                                                'top_paths': self.top_paths}, dtype="float32")(
-            y_pred + [input_length])
-
+                                                                'top_paths': self.top_paths},
+                                          dtype="float32")([fc, input_length])
 
         training_model = models.Model(inputs=[image_input, labels, input_length, label_length], outputs=loss_out)
 
         prediction_model = models.Model(inputs=image_input, outputs=y_pred)
 
-        decode_model = models.Model(inputs=image_input + [input_length], outputs=out_decoded_dense)
+        decode_model = models.Model(inputs=[image_input, input_length], outputs=out_decoded_dense)
 
         return training_model, prediction_model, decode_model
 
