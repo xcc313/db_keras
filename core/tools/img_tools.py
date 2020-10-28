@@ -29,7 +29,7 @@ def get_bounding_box_rect(pos):
 
 
 def resize_norm_img(img, image_shape):
-    imgC, imgH, imgW = image_shape
+    imgH, imgW, imgC = image_shape
     h = img.shape[0]
     w = img.shape[1]
     ratio = w / float(h)
@@ -39,20 +39,20 @@ def resize_norm_img(img, image_shape):
         resized_w = int(math.ceil(imgH * ratio))
     resized_image = cv2.resize(img, (resized_w, imgH))
     resized_image = resized_image.astype('float32')
-    if image_shape[0] == 1:
+    if image_shape[2] == 1:
         resized_image = resized_image / 255
         resized_image = resized_image[np.newaxis, :]
     else:
-        resized_image = resized_image.transpose((2, 0, 1)) / 255
+        resized_image = resized_image / 255
     resized_image -= 0.5
     resized_image /= 0.5
-    padding_im = np.zeros((imgC, imgH, imgW), dtype=np.float32)
-    padding_im[:, :, 0:resized_w] = resized_image
+    padding_im = np.zeros((imgH, imgW, imgC), dtype=np.float32)
+    padding_im[:, 0:resized_w, :] = resized_image
     return padding_im
 
 
 def resize_norm_img_chinese(img, image_shape):
-    imgC, imgH, imgW = image_shape
+    imgH, imgW, imgC = image_shape
     # todo: change to 0 and modified image shape
     max_wh_ratio = 0
     h, w = img.shape[0], img.shape[1]
@@ -65,15 +65,15 @@ def resize_norm_img_chinese(img, image_shape):
         resized_w = int(math.ceil(imgH * ratio))
     resized_image = cv2.resize(img, (resized_w, imgH))
     resized_image = resized_image.astype('float32')
-    if image_shape[0] == 1:
+    if image_shape[2] == 1:
         resized_image = resized_image / 255
         resized_image = resized_image[np.newaxis, :]
     else:
-        resized_image = resized_image.transpose((2, 0, 1)) / 255
+        resized_image = resized_image / 255
     resized_image -= 0.5
     resized_image /= 0.5
-    padding_im = np.zeros((imgC, imgH, imgW), dtype=np.float32)
-    padding_im[:, :, 0:resized_w] = resized_image
+    padding_im = np.zeros((imgH, imgW, imgC), dtype=np.float32)
+    padding_im[:, 0:resized_w, :] = resized_image
     return padding_im
 
 
@@ -356,7 +356,6 @@ def process_image(img,
     else:
         norm_img = resize_norm_img(img, image_shape)
 
-    norm_img = norm_img[np.newaxis, :]
     if label is not None:
         # char_num = char_ops.get_char_num()
         text = char_ops.encode(label)
@@ -369,7 +368,7 @@ def process_image(img,
             return None
         else:
             if loss_type == "ctc":
-                text = text.reshape(-1, 1)
+                # text = text.reshape(-1, 1)
                 return (norm_img, text)
             elif loss_type == "attention":
                 beg_flag_idx = char_ops.get_beg_end_flag_idx("beg")

@@ -7,7 +7,7 @@ from .img_tools import process_image
 def generate_rec(params, globals , is_training=True):
     batch_size = params.batch_size
     image_shape = deepcopy(params.image_shape)
-    image_shape.insert(0, -1)
+    image_shape.insert(0, batch_size)
 
     with open(params.label_path, "rb") as fin:
         label_infor_list = fin.readlines()
@@ -52,21 +52,21 @@ def generate_rec(params, globals , is_training=True):
         image, gt = outs
         if b == 0:
             # Init batch arrays
-            batch_images = np.zeros(batch_size, dtype=np.float32)
+            batch_images = np.zeros(image_shape, dtype=np.float32)
             batch_gts = np.zeros(batch_size, dtype=np.float32)
+            batch_labels = np.zeros((batch_size, globals.max_text_length), dtype=np.float32)
             batch_label_length = np.zeros(batch_size, dtype=np.float32)
             batch_input_length = np.zeros(batch_size, dtype=np.float32)
             batch_loss = np.zeros([batch_size, ], dtype=np.float32)
 
         batch_images[b] = image
-        batch_gts[b] = gt
+        batch_labels[b, 0:len(gt)] = gt
         batch_label_length[b] = len(gt)
         batch_input_length[b] = t_dist_dim
 
         b += 1
         current_idx += 1
         if b == batch_size:
-            inputs = [batch_images, batch_gts]
-            outputs = batch_loss
-            yield [inputs, label, ], outputs
+            inputs = [batch_images, batch_labels, batch_label_length, batch_input_length]
+            yield inputs, batch_loss
             b = 0
