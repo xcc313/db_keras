@@ -49,6 +49,9 @@ def generate_rec(params, globals , is_training=True):
             max_text_length=globals.max_text_length,
             distort=params.distort)
 
+        if not outs:
+            continue
+
         image, gt = outs
 
         if b == 0:

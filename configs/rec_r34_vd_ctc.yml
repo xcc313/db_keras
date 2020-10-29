@@ -14,7 +14,7 @@ train:
   top_paths: 1
   img_dir: E:/dm/samples/ic15_data/
   label_path:  E:/dm/samples/ic15_data/rec_gt_train.txt
-  batch_size: 4
+  batch_size: 6
   init_weight_path:
   save_weight_path: ./ckpts
 test:
