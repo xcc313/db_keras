@@ -50,10 +50,10 @@ def generate_rec(params, globals , is_training=True):
             distort=params.distort)
 
         image, gt = outs
+
         if b == 0:
             # Init batch arrays
             batch_images = np.zeros(image_shape, dtype=np.float32)
-            batch_gts = np.zeros(batch_size, dtype=np.float32)
             batch_labels = np.zeros((batch_size, globals.max_text_length), dtype=np.float32)
             batch_label_length = np.zeros(batch_size, dtype=np.float32)
             batch_input_length = np.zeros(batch_size, dtype=np.float32)
@@ -67,6 +67,6 @@ def generate_rec(params, globals , is_training=True):
         b += 1
         current_idx += 1
         if b == batch_size:
-            inputs = [batch_images, batch_labels, batch_label_length, batch_input_length]
+            inputs = [batch_images, batch_labels, batch_input_length, batch_label_length]
             yield inputs, batch_loss
             b = 0

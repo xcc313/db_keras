@@ -1,7 +1,7 @@
 from absl import app, flags
 import os.path as osp
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+# os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import datetime
 from core.tools import build_cfg, generate_rec, DotDict
 from core.model.r34vd_crnn import RecModel
@@ -24,7 +24,7 @@ def main(_argv):
 
     model, inference_model, decode_model = RecModel(cfg)()
     model.summary()
-    # model.save("./rec_model.h5")
+    model.save("./rec_model.h5")
 
     init_weight = cfg['train']['init_weight_path']
 

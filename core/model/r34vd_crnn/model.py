@@ -11,20 +11,11 @@ import tensorflow as tf
 def ctc_lambda_func(args):
     y_pred, labels, input_length, label_length = args
 
-    # hack for load_model
-    import tensorflow as tf
-
-    ''' from TF: Input requirements
-    1. sequence_length(b) <= time for all b
-    2. max(labels.indices(labels.indices[:, 1] == b, 2)) <= sequence_length(b) for all b.
-    '''
-
     # print("CTC lambda inputs / shape")
     # print("y_pred:",y_pred.shape)  # (?, 778, 30)
     # print("labels:",labels.shape)  # (?, 80)
     # print("input_length:",input_length.shape)  # (?, 1)
     # print("label_length:",label_length.shape)  # (?, 1)
-
 
     return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
 
@@ -54,7 +45,7 @@ class RecModel(object):
         Detection model for OCR text rec.
         :param params:
         """
-
+        self.max_text_length= params.max_text_length
         self.image_shape = deepcopy(params['train']['image_shape'])
         self.greedy = params['train']['greedy']
         self.beam_width = params['train']['beam_width']
@@ -95,13 +86,13 @@ class RecModel(object):
        """
 
         # Change shape
-        labels = layers.Input(name='the_labels', shape=[None, ], dtype='int32')
+        labels = layers.Input(name='labels', shape=[self.max_text_length], dtype='int32')
         input_length = layers.Input(name='input_length', shape=[1], dtype='int32')
         label_length = layers.Input(name='label_length', shape=[1], dtype='int32')
 
         # Keras doesn't currently support loss funcs with extra parameters
         # so CTC loss is implemented in a lambda layer
-        loss_out = layers.Lambda(ctc_lambda_func, output_shape=(1,), name='CTCloss')([fc,
+        loss_out = layers.Lambda(ctc_lambda_func, output_shape=(1,), name='CTCloss')([y_pred,
                                                                            labels,
                                                                            input_length,
                                                                            label_length])
