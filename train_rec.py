@@ -53,8 +53,6 @@ def main(_argv):
 
         visual = PredVisualize(inference_model, val_generator, cfg.char_ops)
 
-        bk = BestKeepCheckpoint(save_path=os.path.join(checkpoints_dir, "db_{epoch:02d}.h5"),
-                                        eval_model=inference_model)
         tb = callbacks.TensorBoard(
             log_dir="logs",
         )
