@@ -66,7 +66,7 @@ def generate_rec(params, globals , is_training=True):
         batch_labels[b, 0:len(gt)] = gt
         batch_label_length[b] = len(gt)
         batch_input_length[b] = t_dist_dim
-
+        print(label)
         b += 1
         current_idx += 1
         if b == batch_size:

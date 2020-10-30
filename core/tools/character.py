@@ -17,7 +17,7 @@ class CharacterOps(object):
         self.max_text_len = config['max_text_length']
         # use the default dictionary(36 char)
         if self.character_type == "en":
-            self.character_str = "0123456789abcdefghijklmnopqrstuvwxyz "
+            self.character_str = "0123456789abcdefghijklmnopqrstuvwxyz"
             dict_character = list(self.character_str)
         # use the custom dictionary
         elif self.character_type in [
@@ -99,7 +99,7 @@ class CharacterOps(object):
             ignored_tokens = [char_num]
 
         for idx in range(len(text_index)):
-            if text_index[idx] in ignored_tokens:
+            if text_index[idx] in ignored_tokens or text_index[idx] == -1:
                 continue
             if is_remove_duplicate:
                 if idx > 0 and text_index[idx - 1] == text_index[idx]:
