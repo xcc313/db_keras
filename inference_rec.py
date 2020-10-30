@@ -29,7 +29,7 @@ def main(_argv):
     cfg = DotDict.to_dot_dict(cfg)
 
     _, inference_model, _ = RecModel(cfg)()
-    inference_model.load_weights(r"E:\dm\repo\DB_keras\checkpoints\2020-10-30\db_03_18.1627_18.8175.h5", by_name=True, skip_mismatch=True)
+    inference_model.load_weights(r"E:\dm\model_weights\db_rec_26.h5", by_name=True, skip_mismatch=True)
 
     try:
         val_generator = generate_rec(cfg['test'], cfg, is_training=False)
@@ -39,12 +39,15 @@ def main(_argv):
         y_preds = inference_model.predict(batch_imgs)
 
         pred_tensor, _ = decode_ctc([y_preds, np.squeeze(input_length)])
-        pred_labels = tf.keras.backend.get_value(pred_tensor[0])
 
-        #map back to strings
-        predictions = [ cfg.char_ops.decode(word) for word in pred_labels.tolist()]
+        for idx, val in enumerate(pred_tensor[0]):
+            image = batch_imgs[idx]
+            # map back to strings
+            predictions = cfg.char_ops.decode(val)
+            cv2.imshow('image', image)
+            cv2.waitKey(0)
+            print(predictions)
 
-        print(predictions)
     except Exception as e:
         print(e)
 
