@@ -1,4 +1,5 @@
 global:
+  epochs: 30
   max_text_length: 25
   character_type: en
   use_space_char: true
@@ -7,7 +8,6 @@ global:
   character_dict_path: ./data/ic15_data/ic15_dict.txt
 train:
   image_shape: [32, 320, 3]
-  epoch: 1200
   distort: true
   greedy: true
   beam_width: 100
@@ -19,7 +19,6 @@ train:
   save_weight_path: ./ckpts
 test:
   image_shape: [32, 320, 3]
-  epoch: 1200
   distort: false
   img_dir: ./data/ic15_data
   label_path:  ./data/ic15_data/rec_gt_test.txt
