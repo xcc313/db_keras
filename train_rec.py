@@ -7,6 +7,7 @@ from core.tools import build_cfg, generate_rec, DotDict
 from core.model.r34vd_crnn import RecModel
 from keras import callbacks
 from keras import optimizers
+from core.callbacks.bestkeepcallback import BestKeepCheckpoint
 from core.callbacks.visual_callback import PredVisualize
 
 flags.DEFINE_string('config', './configs/rec_r34_vd_ctc_colab.yml', 'path to config file')
@@ -46,6 +47,9 @@ def main(_argv):
             verbose=1,
         )
 
+        bk = BestKeepCheckpoint(save_path=os.path.join(checkpoints_dir, "db_{epoch:02d}.h5"),
+                                        eval_model=inference_model)
+
         visual = PredVisualize(inference_model, val_generator, cfg.char_ops)
 
         tb = callbacks.TensorBoard(
@@ -59,7 +63,7 @@ def main(_argv):
             initial_epoch=0,
             epochs=cfg.epochs,
             verbose=1,
-            callbacks=[tb, checkpoint],
+            callbacks=[tb, bk, checkpoint],
             validation_data=val_generator,
             validation_steps=50
         )
