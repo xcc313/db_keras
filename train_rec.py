@@ -7,7 +7,6 @@ from core.tools import build_cfg, generate_rec, DotDict
 from core.model.r34vd_crnn import RecModel
 from keras import callbacks
 from keras import optimizers
-from core.callbacks.bestkeepcallback import BestKeepCheckpoint
 from core.callbacks.visual_callback import PredVisualize
 
 flags.DEFINE_string('config', './configs/rec_r34_vd_ctc_colab.yml', 'path to config file')
@@ -42,10 +41,6 @@ def main(_argv):
             print('%s does not exist !' % init_weight)
             print('Training from scratch')
 
-        # lr_callback = [CosineAnnealingScheduler(learning_rate=1e-3,
-        #                                         eta_min=1e-6,
-        #                                         T_max=epochs * epoch_steps,
-        #                                         verbose=1)]
         checkpoint = callbacks.ModelCheckpoint(
             osp.join(checkpoints_dir, 'db_{epoch:02d}_{loss:.4f}_{val_loss:.4f}.h5'),
             verbose=1,
@@ -70,9 +65,6 @@ def main(_argv):
         )
     except Exception as e:
         print(e)
-
-
-
 
 if __name__ == "__main__":
     app.run(main)
