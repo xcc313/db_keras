@@ -12,7 +12,7 @@ train:
   greedy: true
   beam_width: 100
   top_paths: 1
-  img_dir: ./data/ic15_data/
+  img_dir: ./data/ic15_data
   label_path:  ./data/ic15_data/rec_gt_train.txt
   batch_size: 16
   init_weight_path:
@@ -21,7 +21,7 @@ test:
   image_shape: [32, 320, 3]
   epoch: 1200
   distort: false
-  img_dir: ./data/ic15_data/
+  img_dir: ./data/ic15_data
   label_path:  ./data/ic15_data/rec_gt_test.txt
   batch_size: 4
   init_weight_path:
