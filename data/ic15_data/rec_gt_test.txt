@@ -1957,7 +1957,6 @@ test/word_1956.png	 not
 test/word_1957.png	 100
 test/word_1958.png	 can
 test/word_1959.png	 stop
-test/word_1960.png	 u...
 test/word_1961.png	 dook
 test/word_1962.png	 soma
 test/word_1963.png	 bodisciences

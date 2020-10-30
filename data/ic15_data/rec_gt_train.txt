@@ -509,7 +509,6 @@ train/word_508.png	 sale
 train/word_509.png	 tobacco
 train/word_510.png	 below
 train/word_511.png	 it's
-train/word_512.png	 a...
 train/word_513.png	 cash
 train/word_514.png	 accept
 train/word_515.png	 nets
@@ -1238,7 +1237,6 @@ train/word_1238.png	crackers
 train/word_1239.png	toast
 train/word_1240.png	cubes
 train/word_1241.png	yakunkat
-train/word_1242.png	introducucing...
 train/word_1243.png	tidings
 train/word_1244.png	comfort
 train/word_1245.png	and
@@ -2234,7 +2232,6 @@ train/word_2235.png	look
 train/word_2236.png	out
 train/word_2237.png	for
 train/word_2238.png	out
-train/word_2239.png	...
 train/word_2240.png	year
 train/word_2241.png	new
 train/word_2242.png	new
