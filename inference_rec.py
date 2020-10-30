@@ -41,13 +41,13 @@ def main(_argv):
         pred_tensor, _ = decode_ctc([y_preds, np.squeeze(input_length)])
 
         for idx, val in enumerate(pred_tensor[0]):
+
             image = batch_imgs[idx]
             # map back to strings
             predictions = cfg.char_ops.decode(val)
+            print(predictions)
             cv2.imshow('image', image)
             cv2.waitKey(0)
-            print(predictions)
-
     except Exception as e:
         print(e)
 

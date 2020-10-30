@@ -17,7 +17,7 @@ class CharacterOps(object):
         self.max_text_len = config['max_text_length']
         # use the default dictionary(36 char)
         if self.character_type == "en":
-            self.character_str = "0123456789abcdefghijklmnopqrstuvwxyz"
+            self.character_str = "0123456789abcdefghijklmnopqrstuvwxyz "
             dict_character = list(self.character_str)
         # use the custom dictionary
         elif self.character_type in [
