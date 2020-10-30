@@ -8,8 +8,9 @@ from core.model.r34vd_crnn import RecModel
 from keras import callbacks
 from keras import optimizers
 from core.callbacks.bestkeepcallback import BestKeepCheckpoint
+from core.callbacks.visual_callback import PredVisualize
 
-flags.DEFINE_string('config', './configs/rec_r34_vd_ctc.yml', 'path to config file')
+flags.DEFINE_string('config', './configs/rec_r34_vd_ctc_colab.yml', 'path to config file')
 FLAGS = flags.FLAGS
 
 def main(_argv):
@@ -23,8 +24,8 @@ def main(_argv):
         os.makedirs(checkpoints_dir)
 
     model, inference_model, decode_model = RecModel(cfg)()
-    model.summary()
-    model.save("./rec_model.h5")
+    # model.summary()
+    # model.save("./rec_model.h5")
 
     init_weight = cfg['train']['init_weight_path']
 
@@ -50,6 +51,8 @@ def main(_argv):
             verbose=1,
         )
 
+        visual = PredVisualize(inference_model, val_generator, cfg.char_ops)
+
         bk = BestKeepCheckpoint(save_path=os.path.join(checkpoints_dir, "db_{epoch:02d}.h5"),
                                         eval_model=inference_model)
         tb = callbacks.TensorBoard(
@@ -59,13 +62,13 @@ def main(_argv):
         model.compile(optimizer=optimizers.Adam(lr=1e-3), loss={'CTCloss': lambda y_true, y_pred: y_pred})
         model.fit_generator(
             generator=train_generator,
-            steps_per_epoch=125,
+            steps_per_epoch=125*2,
             initial_epoch=0,
-            epochs=10,
+            epochs=16,
             verbose=1,
             callbacks=[tb, bk, checkpoint],
             validation_data=val_generator,
-            validation_steps=19
+            validation_steps=50
         )
     except Exception as e:
         print(e)
