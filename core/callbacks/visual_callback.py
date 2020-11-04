@@ -37,4 +37,4 @@ class PredVisualize(tf.keras.callbacks.Callback):
         predictions = [ self.char_ops.decode(word) for word in pred_labels.tolist()]
         truths = [self.char_ops.decode(word) for word in batch_labels.tolist()]
 
-        print('predictions {}'.format(predictions))
+        print('predictions {}   truths {}'.format(predictions, truths))

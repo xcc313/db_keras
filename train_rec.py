@@ -63,7 +63,7 @@ def main(_argv):
             initial_epoch=0,
             epochs=cfg.epochs,
             verbose=1,
-            callbacks=[tb, bk, checkpoint],
+            callbacks=[tb, bk, visual, checkpoint],
             validation_data=val_generator,
             validation_steps=50
         )
