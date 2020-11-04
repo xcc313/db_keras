@@ -15,7 +15,7 @@ train:
   img_dir: ./data/ic15_data
   label_path:  ./data/ic15_data/rec_gt_train.txt
   batch_size: 16
-  init_weight_path: ./checkpoints/2020-10-30/db_12_2.0428_7.6691.h5
+  init_weight_path: ./checkpoints/2020-11-04/db_12_2.0428_7.6691.h5
   save_weight_path: ./ckpts
 test:
   image_shape: [32, 320, 3]
