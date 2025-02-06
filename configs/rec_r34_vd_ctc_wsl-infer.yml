@@ -1,0 +1,26 @@
+global:
+  epochs: 10
+  max_text_length: 25
+  character_type: en
+  use_space_char: true
+  loss_type: ctc
+  hidden_size: 96
+  character_dict_path: ./data/ic15_data/ic15_dict.txt
+train:
+  image_shape: [32, 160, 3]
+  distort: false
+  greedy: true
+  beam_width: 20  #beam search保存最大概率候选的数目
+  top_paths: 1
+  img_dir: /mnt/e/dm/samples/verify_code_sample/group
+  label_path: /mnt/e/dm/samples/verify_code_sample/db_ctc/train.txt
+  batch_size: 50
+  init_weight_path: ./checkpoints/2021-06-18/db_10_0.2025_0.9184.h5
+  save_weight_path: ./ckpts
+test:
+  image_shape: [32, 160, 3]
+  distort: false
+  img_dir: e:/dm/samples/verify_code_sample/Train_validation
+  label_path: e:/dm/samples/verify_code_sample/Train_validation/infer.txt
+  batch_size: 24
+  init_weight_path:

@@ -1,7 +1,7 @@
 from absl import app, flags
 import os.path as osp
 import os
-# os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 import datetime
 from core.tools import build_cfg, generate_rec, DotDict
 from core.model.r34vd_crnn import RecModel
@@ -10,7 +10,7 @@ from keras import optimizers
 from core.callbacks.bestkeepcallback import BestKeepCheckpoint
 from core.callbacks.visual_callback import PredVisualize
 
-flags.DEFINE_string('config', './configs/rec_r34_vd_ctc_colab.yml', 'path to config file')
+flags.DEFINE_string('config', './configs/rec_r34_vd_ctc_captcha.yml', 'path to config file')
 FLAGS = flags.FLAGS
 
 def main(_argv):
@@ -24,8 +24,8 @@ def main(_argv):
         os.makedirs(checkpoints_dir)
 
     model, inference_model, decode_model = RecModel(cfg)()
-    # model.summary()
-    # model.save("./rec_model.h5")
+    model.summary()
+
 
     init_weight = cfg['train']['init_weight_path']
 
@@ -37,7 +37,7 @@ def main(_argv):
             print('Restoring weights from: %s ...' % init_weight)
             model.load_weights(init_weight, by_name=True, skip_mismatch=True)
             # convert to inference model
-            # inference_model.save("db_inference_model.h5")
+            # inference_model.save("captcha_model_0.918.h5")
         else:
             print('%s does not exist !' % init_weight)
             print('Training from scratch')
@@ -45,6 +45,7 @@ def main(_argv):
         checkpoint = callbacks.ModelCheckpoint(
             osp.join(checkpoints_dir, 'db_{epoch:02d}_{loss:.4f}_{val_loss:.4f}.h5'),
             verbose=1,
+            save_weights_only=True,
         )
 
         bk = BestKeepCheckpoint(save_path=os.path.join(checkpoints_dir, "db_{epoch:02d}.h5"),
@@ -56,14 +57,14 @@ def main(_argv):
             log_dir="logs",
         )
 
-        model.compile(optimizer=optimizers.Adam(lr=1e-3), loss={'CTCloss': lambda y_true, y_pred: y_pred})
+        model.compile(optimizer=optimizers.Adam(lr=1.5e-3), loss={'CTCloss': lambda y_true, y_pred: y_pred})
         model.fit_generator(
             generator=train_generator,
-            steps_per_epoch=125*2,
+            steps_per_epoch=125*4,
             initial_epoch=0,
             epochs=cfg.epochs,
             verbose=1,
-            callbacks=[tb, bk, visual, checkpoint],
+            callbacks=[tb, bk, checkpoint],
             validation_data=val_generator,
             validation_steps=50
         )

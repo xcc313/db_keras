@@ -12,7 +12,7 @@ from core.tools.db_process import DBProcessTest
 from core.tools.db_postprocess import DBPostProcess
 from core.model.r50vd_db import DetModel
 
-flags.DEFINE_string('config', './configs/det_r50_vd_db.yml', 'path to config file')
+flags.DEFINE_string('config', './configs/rec_r34_vd_ctc_wsl.yml', 'path to config file')
 FLAGS = flags.FLAGS
 
 
@@ -24,7 +24,7 @@ def main(_argv):
     model_algorithm = cfg['det']['algorithm']
     if model_algorithm == 'DB':
         _, inference_model = DetModel(cfg)()
-        inference_model.load_weights(r"E:\dm\model_weights\db_inference_model.h5", by_name=True, skip_mismatch=True)
+        inference_model.load_weights('./checkpoints/2022-04-26/db_10_12.8176_13.3977.h5', by_name=True, skip_mismatch=True)
         inference_model.summary()
     else:
         raise NotImplementedError('%s not support yet !' % model_algorithm)

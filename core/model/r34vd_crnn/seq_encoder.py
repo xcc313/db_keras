@@ -8,7 +8,7 @@ class SequenceEncoder(object):
         self.rnn_hidden_size = params['hidden_size']
     def __call__(self, inputs):
         """CNN  block and flattening to time distributed layer from
-        the original image of shape ( height, width, 3) will be mapped to (width/4, 128)"""
+        the original image of shape ( height, width, 3) will be mapped to (width/4, 512)"""
         #transpose because the "time axis" is width
         inputs = layers.Permute(dims=(2, 1, 3))(inputs)
         # flatten the height and channels to one dimension, after this the dimension

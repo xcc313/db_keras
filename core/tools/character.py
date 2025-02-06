@@ -35,7 +35,7 @@ class CharacterOps(object):
                     self.character_str += line
             if add_space:
                 self.character_str += " "
-            dict_character = list(self.character_str)
+                dict_character = list(self.character_str)
         elif self.character_type == "en_sensitive":
             # same with ASTER setting (use 94 char).
             self.character_str = string.printable[:-6]

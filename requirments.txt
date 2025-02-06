@@ -1,4 +1,6 @@
-shapely
-imgaug
-pyclipper
+#tensorflow-gpu==2.4.0
+keras==2.4.3
+shapely==1.7.1
+imgaug==0.4.0
+pyclipper==1.2.0
 numpy

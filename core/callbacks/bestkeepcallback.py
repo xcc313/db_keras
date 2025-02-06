@@ -16,4 +16,4 @@ class BestKeepCheckpoint(tf.keras.callbacks.Callback):
         if (epoch+1) % 3 == 0:
             save_path = self.save_path.format(epoch=epoch)
             print("save model " + save_path)
-            self.eval_model.save(save_path)
+            self.eval_model.save_weights(save_path)
